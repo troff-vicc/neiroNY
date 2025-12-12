@@ -4,10 +4,11 @@ import './TextG.css';
 const TextG = () => {
   const [inputText, setInputText] = useState('');
   const [generatedText, setGeneratedText] = useState('');
-  const [editText, setEditText] = useState('');
+  const [additionalRequest, setAdditionalRequest] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [sessionId, setSessionId] = useState(`user_${Date.now()}`);
+  const [requestHistory, setRequestHistory] = useState([]);
 
   // Генерация первоначального поздравления
   const handleGenerate = async () => {
@@ -18,6 +19,7 @@ const TextG = () => {
 
     setIsLoading(true);
     setError('');
+    setAdditionalRequest('');
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}text/generate/`, {
@@ -36,11 +38,18 @@ const TextG = () => {
       }
 
       const result = await response.json();
-
+      
       // Предполагаем, что API возвращает текст в поле 'text' или 'message'
-      const text = result.text || result.message || JSON.stringify(result);
+      const text = result.response;
       setGeneratedText(text);
-      setEditText(text);
+      
+      // Сохраняем в историю запросов
+      setRequestHistory(prev => [...prev, {
+        type: 'initial',
+        request: inputText,
+        response: text,
+        timestamp: new Date().toLocaleTimeString()
+      }]);
     } catch (error) {
       console.error('Error generating text:', error);
       setError('Не удалось сгенерировать текст. Попробуйте еще раз.');
@@ -49,10 +58,10 @@ const TextG = () => {
     }
   };
 
-  // Регенерация с учетом правок
+  // Регенерация с дополнительным запросом
   const handleRegenerate = async () => {
-    if (!editText.trim()) {
-      setError('Пожалуйста, введите текст для регенерации');
+    if (!additionalRequest.trim()) {
+      setError('Пожалуйста, введите дополнительный запрос');
       return;
     }
 
@@ -66,7 +75,7 @@ const TextG = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: editText,
+          message: additionalRequest,
           session_id: sessionId
         }),
       });
@@ -76,11 +85,20 @@ const TextG = () => {
       }
 
       const result = await response.json();
-
-      // Предполагаем, что API возвращает текст в поле 'text' или 'message'
-      const text = result.text || result.message || JSON.stringify(result);
+      
+      const text = result.response;
       setGeneratedText(text);
-      setEditText(text);
+      
+      // Сохраняем в историю запросов
+      setRequestHistory(prev => [...prev, {
+        type: 'regenerate',
+        request: additionalRequest,
+        response: text,
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+      
+      // Очищаем поле дополнительного запроса
+      setAdditionalRequest('');
     } catch (error) {
       console.error('Error regenerating text:', error);
       setError('Не удалось обновить текст. Попробуйте еще раз.');
@@ -89,13 +107,19 @@ const TextG = () => {
     }
   };
 
+  // Быстрые запросы для регенерации
+  const handleQuickRequest = (request) => {
+    setAdditionalRequest(request);
+  };
+
   // Сброс формы
   const handleReset = () => {
     setInputText('');
     setGeneratedText('');
-    setEditText('');
+    setAdditionalRequest('');
     setError('');
     setSessionId(`user_${Date.now()}`);
+    setRequestHistory([]);
   };
 
   // Копирование текста в буфер обмена
@@ -107,6 +131,14 @@ const TextG = () => {
       .catch(err => {
         console.error('Ошибка копирования:', err);
       });
+  };
+
+  // Показать предыдущую версию
+  const showPreviousVersion = (index) => {
+    const prevItem = requestHistory[index];
+    if (prevItem) {
+      setGeneratedText(prevItem.response);
+    }
   };
 
   return (
@@ -123,28 +155,37 @@ const TextG = () => {
           onChange={(e) => setInputText(e.target.value)}
           placeholder="Пример: Сгенерируй новогоднее поздравление для коллег. Добавь немного юмора и пожеланий карьерного роста."
           rows={4}
-          disabled={isLoading}
+          disabled={isLoading || generatedText}
         />
-
+        
         <div className="examples">
           <p>Примеры запросов:</p>
-          <ul>
-            <li onClick={() => setInputText("Сгенерируй новогоднее поздравление для семьи. Сделай его теплым и душевным.")}>
+          <div className="example-buttons">
+            <button 
+              onClick={() => setInputText("Сгенерируй новогоднее поздравление для семьи. Сделай его теплым и душевным.")}
+              disabled={isLoading || generatedText}
+            >
               Для семьи
-            </li>
-            <li onClick={() => setInputText("Создай веселое новогоднее поздравление для друзей с юмором и мемами.")}>
+            </button>
+            <button 
+              onClick={() => setInputText("Создай веселое новогоднее поздравление для друзей с юмором и мемами.")}
+              disabled={isLoading || generatedText}
+            >
               Для друзей
-            </li>
-            <li onClick={() => setInputText("Придумай идею для новогоднего видео-поздравления с неожиданным поворотом.")}>
+            </button>
+            <button 
+              onClick={() => setInputText("Придумай идею для новогоднего видео-поздравления с неожиданным поворотом.")}
+              disabled={isLoading || generatedText}
+            >
               Идея для видео
-            </li>
-          </ul>
+            </button>
+          </div>
         </div>
 
         <button
           className="generate-btn"
           onClick={handleGenerate}
-          disabled={isLoading || !inputText.trim()}
+          disabled={isLoading || !inputText.trim() || generatedText}
         >
           {isLoading ? 'Генерация...' : 'Сгенерировать поздравление ✨'}
         </button>
@@ -162,42 +203,14 @@ const TextG = () => {
         <div className="result-section">
           <div className="result-header">
             <h2>🎁 Ваше новогоднее поздравление:</h2>
-            <button
-              className="copy-btn"
-              onClick={handleCopyToClipboard}
-              title="Копировать в буфер обмена"
-            >
-              📋
-            </button>
-          </div>
-
-          <div className="generated-text">
-            {generatedText}
-          </div>
-
-          {/* Редактирование и регенерация */}
-          <div className="edit-section">
-            <h3>Хотите что-то изменить?</h3>
-            <p className="edit-hint">Отредактируйте текст ниже и нажмите "Перегенерировать"</p>
-
-            <textarea
-              className="edit-textarea"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              placeholder="Внесите правки здесь..."
-              rows={6}
-              disabled={isLoading}
-            />
-
-            <div className="action-buttons">
+            <div className="header-actions">
               <button
-                className="regenerate-btn"
-                onClick={handleRegenerate}
-                disabled={isLoading}
+                className="copy-btn"
+                onClick={handleCopyToClipboard}
+                title="Копировать в буфер обмена"
               >
-                {isLoading ? 'Перегенерация...' : '🔄 Перегенерировать'}
+                📋 Копировать
               </button>
-
               <button
                 className="reset-btn"
                 onClick={handleReset}
@@ -206,6 +219,88 @@ const TextG = () => {
                 🗑️ Новый запрос
               </button>
             </div>
+          </div>
+          
+          <div className="generated-text">
+            {generatedText}
+          </div>
+
+          {/* История запросов */}
+          {requestHistory.length > 1 && (
+            <div className="history-section">
+              <h3>📜 История изменений:</h3>
+              <div className="history-list">
+                {requestHistory.map((item, index) => (
+                  <div 
+                    key={index} 
+                    className={`history-item ${item.type}`}
+                    onClick={() => showPreviousVersion(index)}
+                  >
+                    <span className="history-type">
+                      {item.type === 'initial' ? '🎯 Первоначальный' : '🔄 Перегенерация'}
+                    </span>
+                    <span className="history-request">{item.request}</span>
+                    <span className="history-time">{item.timestamp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Дополнительный запрос для регенерации */}
+          <div className="regenerate-section">
+            <h3>Хотите что-то изменить?</h3>
+            <p className="regenerate-hint">
+              Введите дополнительные пожелания и нажмите "Перегенерировать"
+            </p>
+            
+            <textarea
+              className="additional-request-textarea"
+              value={additionalRequest}
+              onChange={(e) => setAdditionalRequest(e.target.value)}
+              placeholder="Пример: Сделай более формальным / Добавь больше шуток / Укороти текст / Сделай в стихах..."
+              rows={3}
+              disabled={isLoading}
+            />
+            
+            {/* Быстрые запросы для регенерации */}
+            <div className="quick-requests">
+              <p>Быстрые запросы:</p>
+              <div className="quick-buttons">
+                <button 
+                  onClick={() => handleQuickRequest("Сделай более формальным и профессиональным")}
+                  disabled={isLoading}
+                >
+                  🏢 Формальный стиль
+                </button>
+                <button 
+                  onClick={() => handleQuickRequest("Добавь больше шуток и юмора")}
+                  disabled={isLoading}
+                >
+                  😄 Больше юмора
+                </button>
+                <button 
+                  onClick={() => handleQuickRequest("Укороти текст, сделай более лаконичным")}
+                  disabled={isLoading}
+                >
+                  ✂️ Сократить текст
+                </button>
+                <button 
+                  onClick={() => handleQuickRequest("Перепиши в стихах")}
+                  disabled={isLoading}
+                >
+                  📜 В стихах
+                </button>
+              </div>
+            </div>
+            
+            <button
+              className="regenerate-btn"
+              onClick={handleRegenerate}
+              disabled={isLoading || !additionalRequest.trim()}
+            >
+              {isLoading ? 'Перегенерация...' : '🔄 Перегенерировать с учетом пожеланий'}
+            </button>
           </div>
         </div>
       )}
@@ -218,18 +313,42 @@ const TextG = () => {
             <div className="tip-card">
               <h4>🎬 Семейная история</h4>
               <p>Снимите видео с архивными фото и видео уходящего года</p>
+              <button 
+                onClick={() => setInputText("Придумай сценарий для семейного видео-поздравления с архивными фотографиями. Сделай его трогательным.")}
+                className="tip-use-btn"
+              >
+                Использовать
+              </button>
             </div>
             <div className="tip-card">
               <h4>🤣 Юмористическое</h4>
               <p>Пародия на новогоднее обращение с шутками и мемами</p>
+              <button 
+                onClick={() => setInputText("Напиши сценарий юмористического видео-поздравления в виде пародии на официальное обращение. Добавь мемы и шутки.")}
+                className="tip-use-btn"
+              >
+                Использовать
+              </button>
             </div>
             <div className="tip-card">
               <h4>✨ Творческое</h4>
               <p>Анимация или рисованное поздравление</p>
+              <button 
+                onClick={() => setInputText("Создай идею для креативного анимированного новогоднего поздравления с необычными визуальными эффектами.")}
+                className="tip-use-btn"
+              >
+                Использовать
+              </button>
             </div>
             <div className="tip-card">
               <h4>🎵 Музыкальное</h4>
               <p>Перепойте известную песню с новогодними словами</p>
+              <button 
+                onClick={() => setInputText("Придумай текст для новогодней песни-переделки на известный хит. Добавь идеи для видео-съемки.")}
+                className="tip-use-btn"
+              >
+                Использовать
+              </button>
             </div>
           </div>
         </div>

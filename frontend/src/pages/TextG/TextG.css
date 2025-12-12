@@ -1,5 +1,5 @@
 .text-generator-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,7 +37,7 @@ h1 {
 }
 
 .input-textarea,
-.edit-textarea {
+.additional-request-textarea {
   width: 100%;
   padding: 1rem;
   border: 2px solid #1e3a5f;
@@ -51,7 +51,7 @@ h1 {
 }
 
 .input-textarea:focus,
-.edit-textarea:focus {
+.additional-request-textarea:focus {
   outline: none;
   border-color: #4fc3f7;
   box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
@@ -61,16 +61,17 @@ h1 {
   margin: 1rem 0;
 }
 
-.examples ul {
-  list-style: none;
-  padding: 0;
+.example-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-.examples li {
+.example-buttons button {
   background: rgba(30, 58, 95, 0.5);
+  border: 1px solid #1e3a5f;
+  color: #b3e5fc;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   cursor: pointer;
@@ -78,28 +79,32 @@ h1 {
   font-size: 0.9rem;
 }
 
-.examples li:hover {
+.example-buttons button:hover:not(:disabled) {
   background: #1e3a5f;
   transform: translateY(-2px);
 }
 
+.example-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .generate-btn,
-.regenerate-btn,
-.reset-btn,
-.copy-btn {
-  padding: 0.8rem 1.5rem;
+.regenerate-btn {
+  padding: 1rem 2rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s;
   font-weight: 600;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .generate-btn {
   background: linear-gradient(135deg, #4fc3f7, #0288d1);
   color: white;
-  width: 100%;
 }
 
 .generate-btn:hover:not(:disabled) {
@@ -125,16 +130,41 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.copy-btn,
+.reset-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
 }
 
 .copy-btn {
   background: #1e3a5f;
   color: white;
-  padding: 0.5rem 1rem;
 }
 
 .copy-btn:hover {
   background: #2a4a75;
+}
+
+.reset-btn {
+  background: #d32f2f;
+  color: white;
+}
+
+.reset-btn:hover {
+  background: #c62828;
 }
 
 .generated-text {
@@ -145,38 +175,128 @@ h1 {
   line-height: 1.6;
   margin-bottom: 2rem;
   border-left: 4px solid #4fc3f7;
+  min-height: 150px;
 }
 
-.edit-section {
+.history-section {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: rgba(10, 25, 41, 0.5);
+  border-radius: 10px;
+}
+
+.history-section h3 {
+  color: #81d4fa;
+  margin-bottom: 1rem;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.history-item:hover {
+  background: rgba(30, 58, 95, 0.3);
+}
+
+.history-item.initial {
+  border-left: 3px solid #4fc3f7;
+}
+
+.history-item.regenerate {
+  border-left: 3px solid #66bb6a;
+}
+
+.history-type {
+  font-weight: 600;
+  min-width: 150px;
+}
+
+.history-request {
+  flex: 1;
+  color: #b3e5fc;
+  font-style: italic;
+}
+
+.history-time {
+  color: #81d4fa;
+  font-size: 0.9rem;
+}
+
+.regenerate-section {
+  background: rgba(10, 25, 41, 0.5);
+  padding: 1.5rem;
+  border-radius: 10px;
   margin-top: 2rem;
 }
 
-.edit-section h3 {
+.regenerate-section h3 {
   color: #81d4fa;
   margin-bottom: 0.5rem;
 }
 
-.edit-hint {
+.regenerate-hint {
   color: #b3e5fc;
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
 
-.action-buttons {
+.quick-requests {
+  margin: 1rem 0;
+}
+
+.quick-buttons {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.quick-buttons button {
+  background: rgba(79, 195, 247, 0.1);
+  border: 1px solid #4fc3f7;
+  color: #81d4fa;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.quick-buttons button:hover:not(:disabled) {
+  background: rgba(79, 195, 247, 0.2);
+  transform: translateY(-2px);
+}
+
+.quick-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .regenerate-btn {
   background: linear-gradient(135deg, #66bb6a, #388e3c);
   color: white;
-  flex: 1;
 }
 
-.reset-btn {
-  background: #d32f2f;
-  color: white;
+.regenerate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 187, 106, 0.4);
+}
+
+.regenerate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .error-message {
@@ -215,6 +335,21 @@ h1 {
 .tip-card p {
   color: #b3e5fc;
   font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.tip-use-btn {
+  background: rgba(79, 195, 247, 0.2);
+  border: 1px solid #4fc3f7;
+  color: #81d4fa;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.tip-use-btn:hover {
+  background: rgba(79, 195, 247, 0.3);
 }
 
 .loading-overlay {
@@ -250,21 +385,41 @@ h1 {
   .text-generator-container {
     padding: 1rem;
   }
-
+  
   h1 {
     font-size: 2rem;
   }
-
+  
   .input-section,
   .result-section {
     padding: 1rem;
   }
-
-  .action-buttons {
+  
+  .result-header,
+  .header-actions {
     flex-direction: column;
+    align-items: stretch;
   }
-
+  
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  .history-type {
+    min-width: auto;
+  }
+  
   .tips-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .quick-buttons {
+    flex-direction: column;
+  }
+  
+  .quick-buttons button {
+    width: 100%;
   }
 }
