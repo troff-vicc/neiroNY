@@ -125,12 +125,6 @@ const TextG = () => {
   // Копирование текста в буфер обмена
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(generatedText)
-      .then(() => {
-        alert('Текст скопирован в буфер обмена!');
-      })
-      .catch(err => {
-        console.error('Ошибка копирования:', err);
-      });
   };
 
   // Показать предыдущую версию

@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-k12m+dug)2)4-dj$j_xa5c_c9xerlv)az9-lvv-k1$mj23jh%g
 DEBUG = True
 
 ALLOWED_HOSTS = []
+AUTH_USER_MODEL = 'users.User'
 
 
 def read_env():
@@ -46,10 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',
     
     'textG',
+    'users',
 ]
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
@@ -139,3 +142,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
