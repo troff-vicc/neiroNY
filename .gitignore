@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+env/
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Django
+mediafiles/
+staticfiles/
+
+# Node.js/React
+node_modules/
+dist/
+build/
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
