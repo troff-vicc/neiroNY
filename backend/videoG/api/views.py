@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import base64
 from django.conf import settings
-import uuid
+import os
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -26,12 +26,15 @@ class ChatViewSet(viewsets.ViewSet):
             
             prompt = data.get('prompt')
             
-            from ..video_generator import generate_video_from_text
             
-            video_bytes = generate_video_from_text(
-                prompt=prompt,
-                api_key=self.api_key
-            )
+            #video_bytes = generate_video_from_text(
+            #    prompt=prompt,
+            #    api_key=self.api_key
+            #)
+            
+            file_path = os.path.join(settings.MEDIA_ROOT, "1.mp4")
+            with open(file_path, 'rb') as f:
+                video_bytes = f.read()
             
             video_base64 = base64.b64encode(video_bytes).decode('utf-8')
             

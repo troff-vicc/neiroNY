@@ -1,14 +1,9 @@
 # gpt.py
 import openai
 import base64
-import io
-from io import BytesIO
 import requests
-import tempfile
-from PIL import Image
 from django.conf import settings
 from django.apps import apps
-import os
 
 
 class DalleImageGenerator:
@@ -35,10 +30,10 @@ class DalleImageGenerator:
         except Exception as e:
             return {}
         
-    def description_img(self, base64_image_string, mime_type):
+    def description_img(self, bytes_image_string, file_type_name):
+        mime_type = f"image/{file_type_name}"
+        base64_image_string = base64.b64encode(bytes_image_string).decode('utf-8')
         image_data_url = f"data:{mime_type};base64,{base64_image_string}"
-        
-        # --- 3. Вызов API для получения описания ---
         
         try:
             response = self.client.chat.completions.create(
@@ -50,31 +45,28 @@ class DalleImageGenerator:
                             {
                                 "type": "text",
                                 # Промт для генерации описания для дальнейшего использования
-                                "text": "Подробно опиши (ОЧЕНЬ ВАЖНО ПОДРОБНО ОПИСАТЬ ЛЮДЕЙ НА ИЗОБРАЖЕНИЕ) это изображение. Используй богатый и детализированный язык, чтобы сгенерировать описание, которое может быть использовано для дальнейшей генерации нового изображения в Midjourney или Stable Diffusion. Укажи стиль, композицию, освещение и ключевые объекты."
+                                "text": """"Подробно опиши (ОЧЕНЬ ВАЖНО ПОДРОБНО ОПИСАТЬ ЛЮДЕЙ НА ИЗОБРАЖЕНИЕ) это изображение.
+                                 Используй богатый и детализированный язык, чтобы сгенерировать описание,
+                                  которое может быть использовано для дальнейшей генерации нового изображения в DALLE.
+                                   Укажи ключевые объекты (опиши заметные детали (например очки))"""
                             },
                             {
                                 "type": "image_url",
                                 "image_url": {
                                     # Передаем Base64 в виде data URL
                                     "url": image_data_url,
-                                    "detail": "high"  # Запрос на более детальный анализ
+                                    "detail": "auto"  # Запрос на более детальный анализ
                                 }
                             }
                         ]
                     }
                 ],
-                max_tokens=500  # Ограничение длины ответа
+                max_tokens=200  # Ограничение длины ответа
             )
             
-            # --- 4. Извлечение результата ---
-            # Ответ всегда находится в первом 'choice'
             image_description = response.choices[0].message.content
-            
-            print("✅ Успешно получено описание с помощью 'openai' SDK:")
-            print("------------------------------")
             print(image_description)
-            print("------------------------------")
-            
+            print()
             return image_description
         
         except Exception as e:
@@ -83,7 +75,7 @@ class DalleImageGenerator:
     def generate_dalle3_image(self, prompt, size="1024x1024", quality="standard"):
         """Генерирует изображение через DALL-E 3"""
         try:
-            
+            print(prompt)
             response = self.client.images.generate(
                 model="dall-e-3",
                 prompt=prompt,
@@ -159,7 +151,6 @@ class DalleImageGenerator:
             final_prompt = base_prompt
             if user_text and user_text.strip():
                 final_prompt = f"{base_prompt} Дополнительные условия: {user_text}, описание: {descriptions}"
-            print(final_prompt)
             
             # Выбираем стратегию
             

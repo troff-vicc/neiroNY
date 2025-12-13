@@ -135,7 +135,7 @@ function ImgG() {
                       className={`template-item ${selectedTemplate === template.id ? 'selected' : ''}`}
                       onClick={() => setSelectedTemplate(template.id)}
                     >
-                      <span>{template.id === 'santa' ? '🎅' : '🎄'}</span>
+                      <span>{template.id === 'Father_Frost_Face' ? '🎅' : '🎄'}</span>
                       <span>{template.name}</span>
                     </div>
                   ))}
