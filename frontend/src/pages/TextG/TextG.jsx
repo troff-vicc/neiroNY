@@ -34,6 +34,7 @@ const TextG = () => {
       });
 
       if (!response.ok) {
+        console.log(response)
         throw new Error('Ошибка при генерации текста');
       }
 

@@ -65,8 +65,6 @@ class DalleImageGenerator:
             )
             
             image_description = response.choices[0].message.content
-            print(image_description)
-            print()
             return image_description
         
         except Exception as e:
@@ -75,7 +73,6 @@ class DalleImageGenerator:
     def generate_dalle3_image(self, prompt, size="1024x1024", quality="standard"):
         """Генерирует изображение через DALL-E 3"""
         try:
-            print(prompt)
             response = self.client.images.generate(
                 model="dall-e-3",
                 prompt=prompt,

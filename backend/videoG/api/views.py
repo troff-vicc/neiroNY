@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
 import base64
+from ..krea import generate_video_from_text
 from django.conf import settings
 import os
 
@@ -16,32 +17,24 @@ class ChatViewSet(viewsets.ViewSet):
     """
     
     def __init__(self, *args, **kwargs):
-        self.api_key = settings.API_KEY
+        self.api_key = settings.API_KEY_KREA
         super().__init__(*args, **kwargs)
     
     @action(detail=False, methods=['post'], url_path='generate')
     def generate(self, request):
         try:
             data = request.data
-            
             prompt = data.get('prompt')
             
-            
-            #video_bytes = generate_video_from_text(
-            #    prompt=prompt,
-            #    api_key=self.api_key
-            #)
-            
-            file_path = os.path.join(settings.MEDIA_ROOT, "1.mp4")
-            with open(file_path, 'rb') as f:
-                video_bytes = f.read()
-            
-            video_base64 = base64.b64encode(video_bytes).decode('utf-8')
+            video = generate_video_from_text(
+                prompt,
+                self.api_key
+            )
             
             response_data = {
                 'status': 'success',
                 'message': 'Видео успешно сгенерировано',
-                'video_data': video_base64,
+                'video_url': video['video']['url'],
                 'format': 'base64',
                 'prompt': prompt,
             }

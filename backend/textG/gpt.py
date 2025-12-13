@@ -29,15 +29,12 @@ class GPTClient:
         
         messages.append({"role": "user", "content": message})
         
-        if settings.DEBUG:
-            response_text = "Тестовая модель"
-        else:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=0.7
-            )
-            response_text = response.choices[0].message.content
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            temperature=0.7
+        )
+        response_text = response.choices[0].message.content
         
         self.conversation_history[session_id].append({"role": "user", "content": message})
         self.conversation_history[session_id].append({"role": "assistant", "content": response_text})
@@ -67,15 +64,12 @@ class GPTClient:
         
         messages.append({"role": "user", "content": message})
         
-        if settings.DEBUG:
-            response_text = "Тестовая модель перегенерация"
-        else:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=0.7
-            )
-            response_text = response.choices[0].message.content
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            temperature=0.7
+        )
+        response_text = response.choices[0].message.content
         
         self.conversation_history[session_id].append({"role": "user", "content": message})
         self.conversation_history[session_id].append({"role": "assistant", "content": response_text})

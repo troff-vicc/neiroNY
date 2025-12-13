@@ -33,11 +33,13 @@ AUTH_USER_MODEL = 'users.User'
 
 def read_env():
     with open(".env") as f:
-        return f.read()
+        return f.read().split(',')
 
 
 # Вызываем функцию
-API_KEY = read_env()
+API_KEYs = read_env()
+API_KEY = API_KEYs[0]
+API_KEY_KREA = API_KEYs[1]
 
 # Application definition
 

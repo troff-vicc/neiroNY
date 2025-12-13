@@ -4,6 +4,7 @@ import TextG from './pages/TextG/TextG';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import ImgG from './pages/ImgG/ImgG';
+import VideoG from './pages/VideoG/VideoG';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/img" element={<ImgG />} />
+            <Route path="/video" element={<VideoG />} />
           </Routes>
       </Router>
     </div>
