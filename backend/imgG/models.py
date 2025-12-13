@@ -12,11 +12,6 @@ class CardTemplate(models.Model):
         verbose_name="Заготовленный промт",
         help_text="Промт для генерации контента открытки"
     )
-    image = models.ImageField(
-        upload_to='card_templates/',  # ПРОСТО ПУТЬ БЕЗ ФУНКЦИИ
-        verbose_name="Изображение шаблона",
-        help_text="Загрузите изображение шаблона"
-    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Дата создания"

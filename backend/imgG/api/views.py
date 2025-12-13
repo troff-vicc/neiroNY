@@ -4,11 +4,6 @@ from rest_framework.response import Response
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import base64
-import tempfile
-import os
-from django.conf import settings
-from PIL import Image
-import io
 from ..gpt import process_with_gpt  # Импортируем готовую функцию
 
 
@@ -25,12 +20,6 @@ class CardTemplateViewSet(viewsets.ViewSet):
             template_type = request.data.get('template_type')
             text = request.data.get('text', '')
             
-            # Проверяем обязательные поля
-            if not template_type:
-                return Response(
-                    {'error': 'template_type is required'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             
             # Подготавливаем данные для внешней функции
             gpt_params = {
@@ -40,7 +29,6 @@ class CardTemplateViewSet(viewsets.ViewSet):
                 'image_format': None
             }
             
-            # 1. Изображение как файл (multipart/form-data)
             try:
                 image_data = base64.b64decode(request.data['image_data'])
                 gpt_params['image_format'] = request.data.get('image_format', 'image/jpeg')
