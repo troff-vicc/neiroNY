@@ -3,6 +3,7 @@ import Home from './pages/Home/Home';
 import TextG from './pages/TextG/TextG';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
+import ImgG from './pages/ImgG/ImgG';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
             <Route path="/text" element={<TextG />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/img" element={<ImgG />} />
           </Routes>
       </Router>
     </div>

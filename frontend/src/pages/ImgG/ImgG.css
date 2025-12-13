@@ -1,0 +1,165 @@
+/* App.css - Дополнительные стили */
+/* ... предыдущие стили ... */
+
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+@media (max-width: 992px) {
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-column {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.right-column {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  border: 2px solid #e0e0e0;
+}
+
+.result-section {
+  position: sticky;
+  top: 20px;
+}
+
+.result-container {
+  margin-top: 20px;
+}
+
+.result-preview {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.result-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border: 3px solid #764ba2;
+}
+
+.result-info {
+  background: #f0f4ff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.result-info p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: white;
+  width: 100%;
+  justify-content: center;
+}
+
+.download-btn:hover {
+  background: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+  transform: translateY(-2px);
+}
+
+.empty-result {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 15px;
+  border: 3px dashed #ccc;
+  margin: 20px 0;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-hint {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 10px;
+}
+
+.technical-info {
+  margin-top: 30px;
+  padding: 20px;
+  background: #f0f4ff;
+  border-radius: 10px;
+}
+
+.technical-info h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.technical-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.technical-info li {
+  margin: 10px 0;
+  padding-left: 10px;
+  border-left: 3px solid #667eea;
+}
+
+.image-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.file-size {
+  color: #666;
+  font-size: 0.9rem;
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.file-info {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
