@@ -7,10 +7,12 @@ import base64
 import tempfile
 import os
 from django.conf import settings
+from PIL import Image
+import io
 from ..gpt import process_with_gpt  # Импортируем готовую функцию
 
 
-class ChatViewSet(viewsets.ViewSet):
+class CardTemplateViewSet(viewsets.ViewSet):
     
     @method_decorator(csrf_exempt)
     @action(detail=False, methods=['post'], url_path='generate')
@@ -38,38 +40,20 @@ class ChatViewSet(viewsets.ViewSet):
                 'image_format': None
             }
             
-            # Обрабатываем изображение если есть
-            image_file = None
-            image_data = None
-            
             # 1. Изображение как файл (multipart/form-data)
-            if 'image' in request.FILES:
-                image_file = request.FILES['image']
-                # Читаем файл в бинарном формате
-                image_data = image_file.read()
-                gpt_params['image_format'] = image_file.content_type
-            
-            # 2. Изображение как base64 строка
-            elif 'image' in request.data and isinstance(request.data['image'], str):
-                try:
-                    image_data = base64.b64decode(request.data['image'])
-                    gpt_params['image_format'] = request.data.get('image_format', 'image/jpeg')
-                except (base64.binascii.Error, ValueError) as e:
-                    return Response(
-                        {'error': f'Invalid base64 image: {str(e)}'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-            
-            # 3. Изображение как URL
-            elif 'image_url' in request.data:
-                gpt_params['image_url'] = request.data['image_url']
+            try:
+                image_data = base64.b64decode(request.data['image_data'])
+                gpt_params['image_format'] = request.data.get('image_format', 'image/jpeg')
+            except (base64.binascii.Error, ValueError) as e:
+                return Response(
+                    {'error': f'Invalid base64 image: {str(e)}'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
             # Сохраняем бинарные данные изображения если есть
             if image_data:
                 gpt_params['image_data'] = image_data
             
-            # Вызываем внешнюю функцию обработки с GPT
-            # Предполагаем, что process_with_gpt возвращает словарь с результатом
             result = process_with_gpt(**gpt_params)
             
             # Проверяем результат
@@ -84,18 +68,17 @@ class ChatViewSet(viewsets.ViewSet):
             response_data = {
                 'success': True,
                 'template_type': template_type,
-                'user_input': {
-                    'text': text,
-                    'has_image': image_data is not None or 'image_url' in gpt_params
-                },
-                'generated_content': result.get('content'),
-                'processing_info': result.get('info', {})
+                'message': result.get('content'),
             }
             
             # Если в результате есть сгенерированное изображение (base64)
-            if 'generated_image' in result:
-                response_data['generated_image'] = result['generated_image']
+            if 'image_base64' in result:
+                response_data['generated_image'] = result['image_base64']
                 response_data['image_format'] = result.get('image_format', 'image/png')
+                response_data['image_size'] = result.get('size_bytes', 0)
+            
+            if 'image_url' in result:
+                response_data['image_url'] = result['image_url']
             
             return Response(response_data, status=status.HTTP_200_OK)
         

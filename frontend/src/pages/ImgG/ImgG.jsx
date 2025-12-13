@@ -1,26 +1,25 @@
-// App.jsx - Обновленная версия с получением base64
+// App.jsx - Отправка через base64
 import React, { useState } from 'react';
 import './ImgG.css';
 
 function ImgG() {
-  const [selectedTemplate, setSelectedTemplate] = useState('santa');
+  const [selectedTemplate, setSelectedTemplate] = useState('Father_Frost_Face');
   const [textRequest, setTextRequest] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
-  const [processedImage, setProcessedImage] = useState(null); // Для полученного изображения
+  const [processedImage, setProcessedImage] = useState(null);
 
   const templates = [
-    { id: 'santa', name: 'Лицо Деда Мороза', description: 'Новогодний шаблон с Дедом Морозом' },
-    { id: 'tree', name: 'Модная Ёлка', description: 'Современный дизайн новогодней ёлки' }
+    { id: 'Father_Frost_Face', name: 'Дед Мороз' },
+    { id: 'tree', name: 'Ёлка' }
   ];
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Проверяем размер файла (например, максимум 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert('Файл слишком большой. Максимальный размер: 5MB');
       return;
@@ -34,7 +33,6 @@ function ImgG() {
     };
     reader.readAsDataURL(file);
     
-    // Очищаем предыдущий результат
     setProcessedImage(null);
     setResponseMessage('');
   };
@@ -49,48 +47,62 @@ function ImgG() {
 
     setIsLoading(true);
     setResponseMessage('');
-    setProcessedImage(null); // Сбрасываем предыдущий результат
+    setProcessedImage(null);
 
-    const formData = new FormData();
-    formData.append('template_type', selectedTemplate);
-    formData.append('text', textRequest);
-    formData.append('image_data', selectedImage);
-    formData.append('image_format', selectedImage.name); // Можно добавить имя файла
-
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}img/generate/`, {
-        method: 'POST',
-        body: formData,
-        // Для некоторых API может потребоваться авторизация
-        // headers: {
-        //   'Authorization': 'Bearer ваш_токен'
-        // }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Ошибка сервера: ${response.status} - ${errorText}`);
-      }
-
-      const result = await response.json();
+    // Конвертируем файл в base64
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedImage);
+    
+    reader.onload = async () => {
+      const base64Data = reader.result.split(',')[1]; // Убираем префикс "data:image/..."
+      const imageFormat = selectedImage.type.split('/')[1]; // Получаем формат (jpeg, png, etc)
       
-      // Предполагаем, что сервер возвращает JSON с полем imageBase64
-      if (result.success && result.imageBase64) {
-        setProcessedImage(result.imageBase64);
-        setResponseMessage(`✅ Успешно обработано! ${result.message || ''}`);
-      } else {
-        throw new Error(result.message || 'Сервер вернул некорректный ответ');
+      const requestData = {
+        template_type: selectedTemplate,
+        text: textRequest,
+        image_data: base64Data,
+        image_format: imageFormat
+      };
+
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}img/generate/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Ошибка сервера: ${response.status} - ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log(result);
+        if (result.success && result.generated_image) {
+          // Добавляем префикс для отображения
+          setProcessedImage(`data:image/${result.image_format || 'png'};base64,${result.generated_image}`);
+          setResponseMessage('✅ Изображение успешно обработано!');
+        } else {
+
+          throw new Error(result.message || 'Сервер вернул некорректный ответ');
+        }
+        
+      } catch (error) {
+        console.error('Ошибка при отправке:', error);
+        setResponseMessage(`❌ Ошибка: ${error.message}`);
+      } finally {
+        setIsLoading(false);
       }
-      
-    } catch (error) {
-      console.error('Ошибка при отправке:', error);
-      setResponseMessage(`❌ Ошибка: ${error.message}`);
-    } finally {
+    };
+
+    reader.onerror = () => {
+      setResponseMessage('❌ Ошибка чтения файла');
       setIsLoading(false);
-    }
+    };
   };
 
-  // Функция для скачивания обработанного изображения
   const downloadProcessedImage = () => {
     if (!processedImage) return;
     
@@ -104,167 +116,121 @@ function ImgG() {
 
   return (
     <div className="app">
-      <header className="header">
+      <header>
         <h1>Новогодний Редактор</h1>
-        <p>Отправляем файл → Получаем обработанное изображение в base64</p>
+        <p>Отправка через base64</p>
       </header>
 
-      <main className="main-content">
-        <div className="two-column-layout">
+      <main>
+        <div className="layout">
           {/* Левая колонка - форма */}
-          <div className="left-column">
-            <form className="upload-form" onSubmit={handleSubmit}>
-              <div className="form-section">
-                <h2>1. Выберите шаблон</h2>
-                <div className="template-grid">
+          <div className="form-column">
+            <form onSubmit={handleSubmit}>
+              <div className="section">
+                <h2>Шаблон</h2>
+                <div className="template-list">
                   {templates.map(template => (
                     <div 
                       key={template.id}
-                      className={`template-card ${selectedTemplate === template.id ? 'selected' : ''}`}
+                      className={`template-item ${selectedTemplate === template.id ? 'selected' : ''}`}
                       onClick={() => setSelectedTemplate(template.id)}
                     >
-                      <div className="template-preview">
-                        {template.id === 'santa' ? '🎅' : '🎄'}
-                      </div>
-                      <h3>{template.name}</h3>
-                      <p>{template.description}</p>
+                      <span>{template.id === 'santa' ? '🎅' : '🎄'}</span>
+                      <span>{template.name}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="form-section">
-                <h2>2. Текстовый запрос</h2>
+              <div className="section">
+                <h2>Текстовый запрос</h2>
                 <textarea
-                  className="text-input"
-                  placeholder="Например: 'Добавь снег', 'Сделай новогоднее настроение'..."
+                  placeholder="Описание изменений..."
                   value={textRequest}
                   onChange={(e) => setTextRequest(e.target.value)}
-                  rows={3}
+                  rows={2}
                 />
               </div>
 
-              <div className="form-section">
-                <h2>3. Загрузите изображение</h2>
-                <p className="file-info">
-                  Максимальный размер: 5MB. Отправляется как файл.
-                </p>
-                <div className="image-upload-area">
-                  {previewUrl ? (
-                    <div className="image-preview">
-                      <img src={previewUrl} alt="Ваше изображение" />
-                      <div className="image-actions">
-                        <button 
-                          type="button"
-                          className="btn remove-btn"
-                          onClick={() => {
-                            setSelectedImage(null);
-                            setPreviewUrl('');
-                          }}
-                        >
-                          Удалить
-                        </button>
-                        <span className="file-size">
-                          {(selectedImage?.size / 1024 / 1024).toFixed(2)} MB
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <label className="upload-label">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="file-input"
-                      />
-                      <div className="upload-placeholder">
-                        <span className="upload-icon">📁</span>
-                        <p>Нажмите для выбора файла</p>
-                        <p className="upload-hint">Будет отправлен как файл (multipart/form-data)</p>
-                      </div>
-                    </label>
-                  )}
-                </div>
+              <div className="section">
+                <h2>Изображение</h2>
+                {previewUrl ? (
+                  <div className="preview">
+                    <img src={previewUrl} alt="Загруженное" />
+                    <button 
+                      type="button"
+                      className="remove-btn"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setPreviewUrl('');
+                      }}
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                ) : (
+                  <label className="upload-btn">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                    Выбрать файл
+                  </label>
+                )}
               </div>
 
-              <div className="form-section">
-                <button 
-                  type="submit" 
-                  className="submit-btn"
-                  disabled={isLoading || !selectedImage}
-                >
-                  {isLoading ? (
-                    <>
-                      <span className="spinner"></span>
-                      Обработка...
-                    </>
-                  ) : 'Обработать изображение'}
-                </button>
-              </div>
+              <button 
+                type="submit" 
+                className="submit-btn"
+                disabled={isLoading || !selectedImage}
+              >
+                {isLoading ? 'Отправка...' : 'Отправить'}
+              </button>
             </form>
           </div>
 
           {/* Правая колонка - результат */}
-          <div className="right-column">
-            <div className="result-section">
-              <h2>Результат обработки</h2>
-              
-              {responseMessage && (
-                <div className={`response-message ${responseMessage.includes('❌') ? 'error' : 'success'}`}>
-                  {responseMessage}
-                </div>
-              )}
-
-              {processedImage ? (
-                <div className="result-container">
-                  <div className="result-preview">
-                    <img 
-                      src={processedImage} 
-                      alt="Обработанное изображение" 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWVlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5FcnJvciBsb2FkaW5nIGltYWdlPC90ZXh0Pjwvc3ZnPg==';
-                      }}
-                    />
-                  </div>
-                  <div className="result-info">
-                    <p><strong>Шаблон:</strong> {templates.find(t => t.id === selectedTemplate)?.name}</p>
-                    <p><strong>Запрос:</strong> {textRequest || 'не указан'}</p>
-                    <p><strong>Получен в формате:</strong> Base64 ({Math.round(processedImage.length * 0.75 / 1024)} KB)</p>
-                  </div>
-                  <button 
-                    className="btn download-btn"
-                    onClick={downloadProcessedImage}
-                  >
-                    ⬇️ Скачать результат
-                  </button>
-                </div>
-              ) : (
-                <div className="empty-result">
-                  <div className="empty-icon">🖼️</div>
-                  <p>Здесь появится обработанное изображение</p>
-                  <p className="empty-hint">
-                    Сервер вернет результат в формате Base64
-                  </p>
-                </div>
-              )}
-
-              <div className="technical-info">
-                <h3>Техническая информация:</h3>
-                <ul>
-                  <li>📤 <strong>Отправка:</strong> Файл (multipart/form-data)</li>
-                  <li>📥 <strong>Получение:</strong> Base64 строка (application/json)</li>
-                  <li>⚡ <strong>Преимущество:</strong> Меньший размер передаваемых данных от сервера</li>
-                </ul>
+          <div className="result-column">
+            <h2>Результат</h2>
+            
+            {responseMessage && (
+              <div className={`message ${responseMessage.includes('❌') ? 'error' : 'success'}`}>
+                {responseMessage}
               </div>
+            )}
+
+            {processedImage ? (
+              <div className="result">
+                <div className="image-container">
+                  <img src={processedImage} alt="Результат" />
+                </div>
+                <button 
+                  className="download-btn"
+                  onClick={downloadProcessedImage}
+                >
+                  Скачать
+                </button>
+              </div>
+            ) : (
+              <div className="placeholder">
+                <p>Здесь будет результат</p>
+              </div>
+            )}
+
+            <div className="info">
+              <p><strong>Отправка:</strong> Base64 (JSON)</p>
+              <p><strong>Поля запроса:</strong></p>
+              <ul>
+                <li>template_type</li>
+                <li>text</li>
+                <li>image_data</li>
+                <li>image_format</li>
+              </ul>
             </div>
           </div>
         </div>
       </main>
-
-      <footer className="footer">
-        <p>Новогодний редактор © 2025 | Отправка: файл → Получение: base64</p>
-      </footer>
     </div>
   );
 }
