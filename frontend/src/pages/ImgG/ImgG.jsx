@@ -13,7 +13,8 @@ function ImgG() {
 
   const templates = [
     { id: 'Father_Frost_Face', name: 'Дед Мороз' },
-    { id: 'tree', name: 'Ёлка' }
+    { id: 'tree', name: 'Ёлка' },
+    { id: 'new_t', name: 'Свой' }
   ];
 
   const handleImageUpload = (event) => {
@@ -117,8 +118,7 @@ function ImgG() {
   return (
     <div className="app">
       <header>
-        <h1>Новогодний Редактор</h1>
-        <p>Отправка через base64</p>
+        <a href="/"><h1>Новогодний Редактор</h1></a>
       </header>
 
       <main>
@@ -211,6 +211,12 @@ function ImgG() {
                 >
                   Скачать
                 </button>
+                <button
+                  className="repost-btn"
+                  onClick={downloadProcessedImage}
+                >
+                  Поделиться
+                </button>
               </div>
             ) : (
               <div className="placeholder">
@@ -218,16 +224,7 @@ function ImgG() {
               </div>
             )}
 
-            <div className="info">
-              <p><strong>Отправка:</strong> Base64 (JSON)</p>
-              <p><strong>Поля запроса:</strong></p>
-              <ul>
-                <li>template_type</li>
-                <li>text</li>
-                <li>image_data</li>
-                <li>image_format</li>
-              </ul>
-            </div>
+
           </div>
         </div>
       </main>

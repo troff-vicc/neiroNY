@@ -1,90 +1,54 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
-const Home = ({ onLogout }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+const Home = () => {
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    if (!localStorage.getItem('token')) {
-      setError("Не вошли в аккаунт")
-      return;
-    }
-    if (!window.confirm('Вы уверены, что хотите выйти?')) {
-      return;
-    }
+  const handleCardClick = () => {
+    navigate('/img');
+  };
 
-    setIsLoading(true);
-    setError('');
+  const handleGreetingClick = () => {
+    navigate('/text');
+  };
 
-    try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}users/logout/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token ? `Token ${token}` : '',
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Очищаем localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-
-        // Вызываем callback если передан
-        if (onLogout) {
-          onLogout();
-        }
-
-        // Перенаправляем на страницу входа
-        navigate('/login');
-      } else {
-        setError(data.error || 'Ошибка при выходе');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      setError('Ошибка соединения');
-
-      // Даже при ошибке очищаем локальное хранилище
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      navigate('/login');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleVideoClick = () => {
+    navigate('/video');
   };
 
   return (
-    <>
-      {error && (
-        <div className="logout-error">
-          {error}
-        </div>
-      )}
+    <div className="main1">
+      {/* Первый экран с фоновым изображением */}
+      <a href="/login"><div className="hero-section">
+      </div></a>
 
-      <button
-        onClick={handleLogout}
-        disabled={isLoading}
-        className="logout-btn"
-      >
-        {isLoading ? (
-          <span className="logout-spinner"></span>
-        ) : (
-          <>
-            <svg className="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Выйти
-          </>
-        )}
-      </button>
-    </>
+      {/* Второй экран с кнопками */}
+      <div className="buttons-section">
+        <div className="buttons-container">
+          <button
+            className="action-button red-border-button"
+            onClick={handleCardClick}
+          >
+            <span className="button-text">создать открытку</span>
+          </button>
+
+          <button
+            className="action-button red-border-button"
+            onClick={handleGreetingClick}
+          >
+            <span className="button-text">придумать поздравление</span>
+          </button>
+
+          <button
+            className="action-button red-border-button"
+            onClick={handleVideoClick}
+          >
+            <span className="button-text">создать видео</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
