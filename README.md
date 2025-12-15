@@ -1,6 +1,5 @@
-## Презентацию разработчика и видео прототим пожно найти в папке [docs](docs)
+## Презентацию и видео прототим пожно найти в папке [docs](docs)
 
----
 # Нейро Новый год
 
 **Сервис генерации персонализированных новогодних поздравлений с мультимедиа**
@@ -41,8 +40,8 @@
 
 1. **Клонирование репозитория**
 ```bash
-git clone https://github.com/your-username/newyear-generator
-cd newyear-generator
+git clone https://github.com/troff-vicc/neiroNY
+cd neiroNY
 ```
 
 2. **Настройка бэкенда**
@@ -50,7 +49,7 @@ cd newyear-generator
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip3 install -r backend/requirements.txt
 
 # Настройка переменных окружения
 cp .env.example .env
