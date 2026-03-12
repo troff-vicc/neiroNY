@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -15,13 +16,29 @@ const Home = () => {
 
   const handleVideoClick = () => {
     navigate('/video');
+    
   };
 
+
+
+
   return (
+
     <div className="main1">
       {/* Первый экран с фоновым изображением */}
-      <a href="/login"><div className="hero-section">
-      </div></a>
+      <div className="hero-section">
+         <a href="/login" className='log'>
+          <img src="Vector.png" alt="login" className='logimg'/>
+        </a>
+
+      <div className="hero-text">
+        
+    <p className="hero-subtitle">
+      Создай незабываемое поздравление к Новому году
+    </p>
+  </div>
+  </div>
+
 
       {/* Второй экран с кнопками */}
       <div className="buttons-section">

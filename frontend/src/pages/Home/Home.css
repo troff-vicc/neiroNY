@@ -1,6 +1,3 @@
-/* Home.css */
-
-/* Сброс стандартных отступов */
 * {
   margin: 0;
   padding: 0;
@@ -8,14 +5,14 @@
 }
 
 .main1 {
-    height: 100%;
-    weight: 100%;
+  width: 100%;
+  min-height: 100%;
 }
 
-/* Первый экран с фоновым изображением */
 .hero-section {
+  position: relative;
   height: 100vh;
-  weight: 100vh;
+  width: 100%;
   margin: 0 auto;
   background-image: url('backround.png');
   background-size: cover;
@@ -26,28 +23,24 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: white;
-  padding: 20px;
 }
 
-.hero-title {
-  font-size: 4rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+.hero-text {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, 10%);
+  font-size: 42px;
+  font-weight: 600;
+  color: #1C2625;
+  text-align: center;
+  max-width: 800px;
+  line-height: 1.3;
 }
 
-.hero-subtitle {
-  font-size: 1.5rem;
-  max-width: 600px;
-  line-height: 1.6;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Второй экран с кнопками */
 .buttons-section {
   min-height: 100vh;
-  background-color: #F3EBD8; /* Бежевый цвет */
+  background-color: #F3EBD8;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,7 +67,6 @@
   gap: 20px;
 }
 
-/* Стиль для кнопок с красной обводкой */
 .red-border-button {
   border: 3px solid #580109;
   border-radius: 8px;
@@ -89,7 +81,6 @@
   box-shadow: 0 4px 12px #580109;
 }
 
-/* Эффект при нажатии */
 .red-border-button:active {
   transform: translateX(5px);
   box-shadow: 0 2px 6px rgba(88, 1, 9, 0.2);
@@ -98,27 +89,52 @@
 .button-number {
   font-size: 3rem;
   font-weight: bold;
-  color: #580109; /* Красный цвет для цифр */
+  color: #580109;
   min-width: 60px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .button-text {
   font-size: 1.8rem;
-  color: #F3EBD8; /* Красный цвет для текста */
+  color: #F3EBD8;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 1px;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
+.log {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 72px;
+  height: 72px;
+  padding: 8px;
+  background-color: rgba(243, 235, 216, 0.98);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  z-index: 50;
+}
 
-  .hero-subtitle {
-    font-size: 1.2rem;
+.log:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+.logimg {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+
+  .hero-text {
+    font-size: 38px;
+    
   }
 
   .button-number {
@@ -137,15 +153,25 @@
   .red-border-button {
     border-width: 2px;
   }
+
+  .log {
+    top: 14px;
+    right: 14px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .logimg {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 @media (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-  }
 
-  .hero-subtitle {
-    font-size: 1rem;
+  .hero-text {
+    font-size: 32px;
+    
   }
 
   .button-number {
@@ -163,5 +189,17 @@
 
   .red-border-button {
     border-width: 1.5px;
+  }
+
+  .log {
+    top: 10px;
+    right: 10px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .logimg {
+    width: 44px;
+    height: 44px;
   }
 }
