@@ -15,61 +15,108 @@
 - 🖼️ **Генерация фото** — создание новогодних открыток с AI-изображениями
 - 🎬 **Генерация видео** — анимированные поздравления с голосовым сопровождением
 
-## 🛠 Технологии
+# 🛠 Используемые технологии
 
-### Frontend
-- **React** + **JS** — современный интерфейс
-- **Vite** — быстрая сборка
-- **CSS** — стилизация компонентов
-- **React Router** — навигация
+## Backend
 
-### Backend
-- **Django** — высокопроизводительный Python фреймворк
-- **OpenAI API**** — генерация текстов
-- **DALL-E** — генерация изображений
-- **SQLite** — хранение шаблонов и истории
+-   Python
+-   Django
+-   Django REST Framework
+-   OpenAI API
+-   SQLite
 
-## 🚀 Быстрый старт
+## Frontend
 
-### Предварительные требования
-- Python 3.8+
-- Node.js 18+
-- API ключи для выбранных AI-сервисов
+-   React
+-   Vite
+-   JavaScript
+-   CSS
+-   React Router
 
-### Установка и запуск
+------------------------------------------------------------------------
 
-1. **Клонирование репозитория**
-```bash
-git clone https://github.com/troff-vicc/neiroNY
-cd neiroNY
-```
+# 🚀 Быстрый запуск проекта
 
-2. **Настройка бэкенда**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip3 install -r backend/requirements.txt
+## 1. Клонировать репозиторий
 
-# Настройка переменных окружения
-cp .env.example .env
-# Отредактируйте .env, добавив API ключи
+    git clone https://github.com/troff-vicc/neiroNY.git
+    cd neiroNY
 
-python manage.py migrate
-python manage.py runserver
-```
-Бэкенд будет доступен по адресу: `http://localhost:8000`
+------------------------------------------------------------------------
 
-3. **Настройка фронтенда**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Фронтенд будет доступен по адресу: `http://localhost:5173`
+# ⚙️ Запуск Backend
 
+## 1. Перейти в папку backend
 
-## 🎯 Модули генерации
+    cd backend
+
+## 2. Установить Python 3.12
+
+Проект рекомендуется запускать на **Python 3.12**, так как некоторые
+зависимости могут не работать на Python 3.14.
+
+    python3.12 --version
+
+Если Python 3.12 не установлен:
+
+    brew install python@3.12
+    brew link --overwrite python@3.12
+
+## 3. Создать виртуальное окружение
+
+    python3.12 -m venv env
+    source env/bin/activate
+
+## 4. Обновить pip
+
+    pip install -U pip setuptools wheel
+
+## 5. Установить зависимости
+
+Перед установкой убедитесь, что в `requirements.txt` **нет строки**
+
+    backports.zoneinfo
+
+Затем:
+
+    pip install -r requirements.txt
+
+## 6. Создать файл .env
+
+Создайте файл `.env` в папке `backend`.
+
+    SECRET_KEY=django_secret_key
+    DEBUG=True
+    OPENAI_API_KEY=your_openai_api_key
+
+## 7. Применить миграции
+
+    python manage.py migrate
+
+## 8. Запустить сервер
+
+    python manage.py runserver
+
+Backend:
+
+    http://127.0.0.1:8000
+
+------------------------------------------------------------------------
+
+# 🎨 Запуск Frontend
+
+Откройте новый терминал.
+
+    cd frontend
+    npm install
+    npm run dev
+
+Frontend:
+
+    http://localhost:5173
+
+------------------------------------------------------------------------
+
 
 
 ## 📸 Скриншоты
@@ -89,18 +136,9 @@ npm run dev
 
 На Бэк-энде каждая функция (подраздел api) отдельное Django app и храниться в [backend](backend)
 А оснавная логика в каждом в файле api/views.py
-## 🤝 Вклад в проект
-
-1. Форкните репозиторий
-2. Создайте ветку для фичи (`git checkout -b feature/amazing`)
-3. Закоммитьте изменения (`git commit -m 'Add amazing feature'`)
-4. Запушьте ветку (`git push origin feature/amazing`)
-5. Откройте Pull Request
 
 ---
 
 **Нейро Новый год — Ваши поздравления будут незабываемыми!** 🎅🎁✨
 
 ---
-
-### ip сервера: 148.253.213.231:5173
